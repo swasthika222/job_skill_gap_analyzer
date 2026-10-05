@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}
+Analyze Skills
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <div class="section-heading">
+
+        <p class="small-title">
+            SKILL ANALYSIS
+        </p>
+
+        <h1>
+            Analyze Your Skills
+        </h1>
+
+        <p>
+            Compare your skills with the requirements
+            of your target job.
+        </p>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <form method="POST">
+
+            <label>
+                Select Target Job
+            </label>
+
+            <select name="role"
+                    id="role"
+                    required>
+
+                <option value="">
+                    -- Select Job Role --
+                </option>
+
+                {% for role in roles %}
+
+                    <option value="{{ role['role_name'] }}">
+
+                        {{ role['role_name'] }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <label>
+                Your Skills
+            </label>
+
+            <p class="help-text">
+                Enter skills separated by commas.
+            </p>
+
+            <textarea
+                name="skills"
+                placeholder="Example: Python, SQL, HTML, CSS, Git"
+                required
+            ></textarea>
+
+
+            <div class="example-box">
+
+                <strong>
+                    Example:
+                </strong>
+
+                <p>
+                    Python, SQL, HTML, CSS, MongoDB, Git
+                </p>
+
+            </div>
+
+
+            <button class="btn full"
+                    type="submit">
+
+                Analyze My Skills
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

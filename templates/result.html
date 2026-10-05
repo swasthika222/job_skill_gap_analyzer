@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}
+Analysis Result
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <div class="result-header">
+
+        <p class="small-title">
+            ANALYSIS COMPLETE
+        </p>
+
+        <h1>
+            {{ role }}
+        </h1>
+
+        <p>
+            Here is your current skill match.
+        </p>
+
+    </div>
+
+
+    <div class="score-card">
+
+        <div class="score-circle">
+
+            {{ percentage }}%
+
+        </div>
+
+        <h2>
+            Skill Match
+        </h2>
+
+        {% if percentage >= 80 %}
+
+            <p>
+                You have a strong skill match for this role.
+            </p>
+
+        {% elif percentage >= 50 %}
+
+            <p>
+                You have several relevant skills.
+                Focus on the missing skills.
+            </p>
+
+        {% else %}
+
+            <p>
+                You have several skills to develop
+                for this role.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="result-grid">
+
+        <div class="result-box">
+
+            <h2>
+                ✓ Matched Skills
+            </h2>
+
+            {% if matched_skills %}
+
+                {% for skill in matched_skills %}
+
+                    <span class="skill matched">
+                        {{ skill }}
+                    </span>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    No matched skills found.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="result-box">
+
+            <h2>
+                ✗ Missing Skills
+            </h2>
+
+            {% if missing_skills %}
+
+                {% for skill in missing_skills %}
+
+                    <span class="skill missing">
+                        {{ skill }}
+                    </span>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    No missing skills.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    {% if recommendations %}
+
+    <div class="recommendation-box">
+
+        <h2>
+            Recommended Learning
+        </h2>
+
+        <p>
+            Consider learning these missing skills.
+        </p>
+
+
+        <div class="resource-grid">
+
+            {% for resource in recommendations %}
+
+                <div class="resource-card">
+
+                    <span class="resource-skill">
+                        {{ resource.skill }}
+                    </span>
+
+                    <h3>
+                        {{ resource.name }}
+                    </h3>
+
+                    <a href="{{ resource.url }}"
+                       target="_blank">
+
+                        Start Learning →
+
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="center">
+
+        <a class="btn"
+           href="{{ url_for('analyze') }}">
+
+            Analyze Again
+
+        </a>
+
+        <a class="btn secondary"
+           href="{{ url_for('history') }}">
+
+            View History
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

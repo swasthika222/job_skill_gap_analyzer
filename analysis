@@ -1,0 +1,21 @@
+{
+    "name": "Swasthika",
+    "job_role": "Frontend Developer",
+    "user_skills": [
+        "HTML",
+        "CSS",
+        "Python",
+        "Git"
+    ],
+    "matched_skills": [
+        "HTML",
+        "CSS",
+        "Git"
+    ],
+    "missing_skills": [
+        "JavaScript",
+        "React",
+        "GitHub"
+    ],
+    "match_percentage": 50
+}

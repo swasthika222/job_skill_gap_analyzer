@@ -1,0 +1,6 @@
+{
+    "name": "Swasthika",
+    "email": "user@example.com",
+    "password": "hashed_password",
+    "created_at": "..."
+}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <p class="small-title">
+                DASHBOARD
+            </p>
+
+            <h1>
+                Hello, {{ session["name"] }} 👋
+            </h1>
+
+            <p>
+                Track your career skill progress.
+            </p>
+
+        </div>
+
+        <a class="btn"
+           href="{{ url_for('analyze') }}">
+
+            New Analysis
+
+        </a>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <h3>
+                {{ total_analysis }}
+            </h3>
+
+            <p>
+                Total Analyses
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                {{ average_score }}%
+            </h3>
+
+            <p>
+                Average Skill Match
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                7+
+            </h3>
+
+            <p>
+                Job Roles
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-box">
+
+        <h2>
+            Start Your Analysis
+        </h2>
+
+        <p>
+            Select a job role and enter your current skills
+            to find your skill gaps.
+        </p>
+
+        <a class="btn"
+           href="{{ url_for('analyze') }}">
+
+            Analyze Skills
+
+        </a>
+
+    </div>
+
+
+    <div class="dashboard-box">
+
+        <h2>
+            Resume Analyzer
+        </h2>
+
+        <p>
+            Paste your resume text and check whether it contains
+            the skills required for your selected job.
+        </p>
+
+        <a class="btn secondary"
+           href="{{ url_for('resume_analyzer') }}">
+
+            Analyze Resume
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - SkillGap
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="small-title">
+            SMART CAREER ANALYSIS
+        </p>
+
+        <h1>
+            Find Your Skill Gap.
+            <br>
+            Build Your Career.
+        </h1>
+
+        <p>
+            Compare your current skills with the skills required
+            for your dream job and discover what you should learn next.
+        </p>
+
+        <div class="hero-buttons">
+
+            {% if session.get("user_id") %}
+
+                <a class="btn"
+                   href="{{ url_for('analyze') }}">
+                    Analyze My Skills
+                </a>
+
+            {% else %}
+
+                <a class="btn"
+                   href="{{ url_for('register') }}">
+                    Get Started
+                </a>
+
+                <a class="btn secondary"
+                   href="{{ url_for('login') }}">
+                    Login
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="features">
+
+    <h2>
+        How It Works
+    </h2>
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-number">
+                01
+            </div>
+
+            <h3>
+                Enter Your Skills
+            </h3>
+
+            <p>
+                Add the programming languages,
+                tools and technologies you know.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-number">
+                02
+            </div>
+
+            <h3>
+                Select Your Job
+            </h3>
+
+            <p>
+                Choose the job role you want to apply for.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-number">
+                03
+            </div>
+
+            <h3>
+                Find Your Gap
+            </h3>
+
+            <p>
+                See matched skills, missing skills
+                and learning recommendations.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
