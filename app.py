@@ -202,31 +202,182 @@ def dashboard():
     return render_template("dashboard.html", total_analysis=total, average_score=average,
                            recent=analyses[:5])
 
+
 @app.route("/analyze", methods=["GET", "POST"])
 @login_required
 def analyze():
-    roles = get_all_roles()
+    category = request.args.get("category", "").strip()
+
+    if category not in ("IT", "Non-IT"):
+        category = ""
+
+    roles = get_all_roles(category or None)
+
     if request.method == "POST":
-        role = request.form.get("role", "")
-        skills_text = request.form.get("skills", "")
-        if not role or not skills_text.strip():
-            flash("Select a role and enter your skills.", "error")
+        category = request.form.get("category", "").strip()
+        role = request.form.get("role", "").strip()
+        skills_text = request.form.get("skills", "").strip()
+
+        # Validate category.
+        if category not in ("IT", "Non-IT"):
+            flash("Please select IT or Non-IT.", "error")
             return redirect(url_for("analyze"))
+
+        # Validate role against the selected category.
+        valid_roles = {
+            item["role_name"]
+            for item in get_all_roles(category)
+        }
+
+        if role not in valid_roles:
+            flash("Please select a valid job role.", "error")
+            return redirect(url_for("analyze", category=category))
+
+        if not skills_text:
+            flash("Please enter your skills.", "error")
+            return redirect(url_for("analyze", category=category))
+
+        # Get required skills and user-entered skills.
         required = get_role_skills(role)
         user_skills = split_csv(skills_text)
-        skill_map = {s.lower(): s for s in user_skills}
-        matched = [s for s in required if s.lower() in skill_map]
-        missing = [s for s in required if s.lower() not in skill_map]
-        percentage = round(len(matched) / len(required) * 100) if required else 0
+
+        user_skill_names = {
+            skill.strip().casefold()
+            for skill in user_skills
+        }
+
+        matched = [
+            skill for skill in required
+            if skill.strip().casefold() in user_skill_names
+        ]
+
+        missing = [
+            skill for skill in required
+            if skill.strip().casefold() not in user_skill_names
+        ]
+
+        percentage = (
+            round(len(matched) / len(required) * 100)
+            if required else 0
+        )
+
+        # Build learning recommendations without duplicate cards.
         recommendations = []
+        seen_resources = set()
+
         for skill in missing:
             for resource in get_learning_resources(skill):
-                recommendations.append({"skill": skill, **resource})
-        save_analysis(role, user_skills, matched, missing, percentage)
-        return render_template("result.html", role=role, matched_skills=matched,
-                               missing_skills=missing, percentage=percentage,
-                               recommendations=recommendations)
+                name = str(resource.get("resource_name", "")).strip()
+                url = str(resource.get("resource_url", "")).strip()
+
+                if not name or not url:
+                    continue
+
+                key = (
+                    skill.casefold(),
+                    name.casefold(),
+                    url.casefold()
+                )
+
+                if key in seen_resources:
+                    continue
+
+                seen_resources.add(key)
+
+                recommendations.append({
+                    "skill": skill,
+                    "name": name,
+                    "url": url
+                })
+
+        # Personalized learning tips.
+        learning_tips = {
+            "python": (
+                "Practise variables, functions, loops, and small projects.",
+                "https://docs.python.org/3/tutorial/"
+            ),
+            "sql": (
+                "Practise SELECT, WHERE, JOIN, and GROUP BY queries.",
+                "https://www.w3schools.com/sql/"
+            ),
+            "html": (
+                "Build a webpage using headings, forms, links, and tables.",
+                "https://developer.mozilla.org/en-US/docs/Web/HTML"
+            ),
+            "css": (
+                "Practise layouts, Flexbox, selectors, and responsive design.",
+                "https://developer.mozilla.org/en-US/docs/Web/CSS"
+            ),
+            "javascript": (
+                "Practise functions, arrays, objects, and DOM interactions.",
+                "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+            ),
+            "git": (
+                "Practise commits, branches, and version control.",
+                "https://git-scm.com/doc"
+            ),
+            "flask": (
+                "Build a small web application with routes and templates.",
+                "https://flask.palletsprojects.com/en/stable/tutorial/"
+            ),
+            "excel": (
+                "Practise formulas, sorting, filtering, and pivot tables.",
+                "https://support.microsoft.com/excel"
+            ),
+            "communication": (
+                "Practise clear writing, presentations, and active listening.",
+                "https://www.coursera.org/"
+            ),
+            "typing": (
+                "Practise typing accurately and check your speed regularly.",
+                "https://www.typing.com/"
+            ),
+            "accounting": (
+                "Study basic accounting entries and financial statements.",
+                "https://www.accountingcoach.com/"
+            )
+        }
+
+        missing_skill_tips = []
+
+        for skill in missing:
+            tip, learning_url = learning_tips.get(
+                skill.casefold(),
+                (
+                    f"Study the fundamentals of {skill} and practise with a small project or task.",
+                    "https://www.w3schools.com/"
+                )
+            )
+
+            missing_skill_tips.append({
+                "skill": skill,
+                "tip": tip,
+                "url": learning_url
+            })
+
+        # Save analysis to your existing history system.
+        save_analysis(
+            role,
+            user_skills,
+            matched,
+            missing,
+            percentage
+        )
+
+        # IMPORTANT: Return the result page.
+        return render_template(
+            "result.html",
+            role=role,
+            matched_skills=matched,
+            missing_skills=missing,
+            percentage=percentage,
+            recommendations=recommendations,
+            missing_skill_tips=missing_skill_tips
+        )
+
+    # IMPORTANT: Return the form page for GET requests.
     return render_template("analyze.html", roles=roles)
+
 
 @app.route("/resume", methods=["GET", "POST"])
 @login_required

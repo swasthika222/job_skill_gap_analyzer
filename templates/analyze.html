@@ -1,99 +1,114 @@
+
 {% extends "base.html" %}
 
-{% block title %}
-Analyze Skills
-{% endblock %}
+{% block title %}Analyze Skills - SkillGap{% endblock %}
 
 {% block content %}
 
-<div class="page-container">
+<div class="container analyze-container">
 
-    <div class="section-heading">
-
-        <p class="small-title">
-            SKILL ANALYSIS
-        </p>
-
-        <h1>
-            Analyze Your Skills
-        </h1>
-
-        <p>
-            Compare your skills with the requirements
-            of your target job.
-        </p>
-
+    <div class="page-header">
+        <h1>Analyze Your Skills</h1>
+        <p>Compare your skills with the requirements of your target job.</p>
     </div>
 
+    <div class="analyze-card">
 
-    <div class="form-card">
+        <form method="POST" action="{{ url_for('analyze') }}">
 
-        <form method="POST">
+            <!-- Job Category -->
+            <div class="form-group">
+                <label for="category">Select Job Category</label>
 
-            <label>
-                Select Target Job
-            </label>
-
-            <select name="role"
-                    id="role"
-                    required>
-
-                <option value="">
-                    -- Select Job Role --
-                </option>
-
-                {% for role in roles %}
-
-                    <option value="{{ role['role_name'] }}">
-
-                        {{ role['role_name'] }}
-
-                    </option>
-
-                {% endfor %}
-
-            </select>
-
-
-            <label>
-                Your Skills
-            </label>
-
-            <p class="help-text">
-                Enter skills separated by commas.
-            </p>
-
-            <textarea
-                name="skills"
-                placeholder="Example: Python, SQL, HTML, CSS, Git"
-                required
-            ></textarea>
-
-
-            <div class="example-box">
-
-                <strong>
-                    Example:
-                </strong>
-
-                <p>
-                    Python, SQL, HTML, CSS, MongoDB, Git
-                </p>
-
+                <select id="category" name="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="IT">IT</option>
+                    <option value="Non-IT">Non-IT</option>
+                </select>
             </div>
 
+            <!-- Job Role -->
+            <div class="form-group">
+                <label for="role">Select Target Job</label>
 
-            <button class="btn full"
-                    type="submit">
+                <select id="role" name="role" required disabled>
+                    <option value="">-- Select Category First --</option>
+                </select>
+            </div>
 
+            <!-- Skills -->
+            <div class="form-group">
+                <label for="skills">Enter Your Skills</label>
+
+                <textarea
+                    id="skills"
+                    name="skills"
+                    rows="5"
+                    placeholder="Example: Python, SQL, HTML, CSS, Git"
+                    required
+                ></textarea>
+
+                <small>
+                    Enter your skills separated by commas.
+                </small>
+            </div>
+
+            <!-- Example -->
+            <div class="example-box">
+                <strong>Example:</strong>
+                <p>Python, SQL, HTML, CSS, MongoDB, Git</p>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary analyze-button">
                 Analyze My Skills
-
             </button>
 
         </form>
-
     </div>
-
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Job roles provided by the Flask route.
+    const jobRoles = {{ roles | tojson }};
+
+    const categorySelect = document.getElementById("category");
+    const roleSelect = document.getElementById("role");
+
+    function filterJobRoles() {
+        const selectedCategory = categorySelect.value;
+
+        // Clear the previous roles.
+        roleSelect.innerHTML = "";
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = selectedCategory
+            ? "-- Select Job Role --"
+            : "-- Select Category First --";
+
+        roleSelect.appendChild(placeholder);
+
+        // Display roles belonging to the selected category.
+        const filteredRoles = jobRoles.filter(function (role) {
+            return role.category === selectedCategory;
+        });
+
+        filteredRoles.forEach(function (role) {
+            const option = document.createElement("option");
+            option.value = role.role_name;
+            option.textContent = role.role_name;
+            roleSelect.appendChild(option);
+        });
+
+        roleSelect.disabled = filteredRoles.length === 0;
+    }
+
+    categorySelect.addEventListener("change", filterJobRoles);
+
+});
+</script>
 
 {% endblock %}

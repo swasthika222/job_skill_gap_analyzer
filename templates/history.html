@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -9,103 +10,69 @@ Analysis History
 <div class="page-container">
 
     <div class="section-heading">
+        <p class="small-title">HISTORY</p>
 
-        <p class="small-title">
-            HISTORY
-        </p>
+        <h1>Your Analysis History</h1>
 
-        <h1>
-            Your Analysis History
-        </h1>
-
-        <p>
-            View your previous skill-gap analyses.
-        </p>
-
+        <p>View your previous skill-gap analyses.</p>
     </div>
-
 
     {% if analyses %}
 
     <div class="history-table-container">
 
         <table>
-
             <thead>
-
                 <tr>
-
-                    <th>
-                        Job Role
-                    </th>
-
-                    <th>
-                        Match
-                    </th>
-
-                    <th>
-                        Matched Skills
-                    </th>
-
-                    <th>
-                        Missing Skills
-                    </th>
-
-                    <th>
-                        Date
-                    </th>
-
+                    <th>Job Role</th>
+                    <th>Match</th>
+                    <th>Matched Skills</th>
+                    <th>Missing Skills</th>
+                    <th>Date</th>
                 </tr>
-
             </thead>
 
-
             <tbody>
-
                 {% for item in analyses %}
 
                 <tr>
-
                     <td>
-                        <strong>
-                            {{ item.job_role }}
-                        </strong>
+                        <strong>{{ item.job_role }}</strong>
                     </td>
 
                     <td>
-
                         <span class="history-score">
-
                             {{ item.match_percentage }}%
-
                         </span>
-
                     </td>
 
                     <td>
-
-                        {{ item.matched_skills | join(", ") }}
-
+                        {% if item.matched_skills is string %}
+                            {{ item.matched_skills or "None" }}
+                        {% else %}
+                            {{ item.matched_skills | join(", ") }}
+                        {% endif %}
                     </td>
 
                     <td>
-
-                        {{ item.missing_skills | join(", ") }}
-
+                        {% if item.missing_skills is string %}
+                            {{ item.missing_skills or "None" }}
+                        {% else %}
+                            {{ item.missing_skills | join(", ") }}
+                        {% endif %}
                     </td>
 
                     <td>
-
-                        {{ item.created_at.strftime("%d-%m-%Y") }}
-
+                        {% if item.created_at %}
+                            {{ item.created_at[:10].split('-') | reverse | join('-') }}
+                        {% else %}
+                            Not available
+                        {% endif %}
                     </td>
-
                 </tr>
 
                 {% endfor %}
-
             </tbody>
-
         </table>
 
     </div>
@@ -113,22 +80,13 @@ Analysis History
     {% else %}
 
     <div class="empty-box">
+        <h2>No Analysis Yet</h2>
 
-        <h2>
-            No Analysis Yet
-        </h2>
+        <p>Start your first skill analysis.</p>
 
-        <p>
-            Start your first skill analysis.
-        </p>
-
-        <a class="btn"
-           href="{{ url_for('analyze') }}">
-
+        <a class="btn" href="{{ url_for('analyze') }}">
             Start Analysis
-
         </a>
-
     </div>
 
     {% endif %}
